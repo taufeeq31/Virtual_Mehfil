@@ -14,12 +14,6 @@ const app = express();
 app.use(clerkMiddleware()); //verify karega token ko and will attach req.auth
 app.use(express.json()); //help in parsing json bodies
 
-if (process.env.NODE_ENV === 'development') {
-    app.get('/debug-sentry', (req, res) => {
-        throw new Error('My first sentry error');
-    });
-}
-
 
 app.get('/', (req, res) => {
     res.send('Hello World!');
