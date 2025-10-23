@@ -24,7 +24,7 @@ const AuthPage = () => {
                         Sign in to Mehfil
                     </CardTitle>
                     <CardDescription className="text-base ">
-                        A calm space to connect and share.
+                          A calm space to connect and share.
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
