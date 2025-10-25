@@ -12,8 +12,9 @@ import {
 
 const AuthPage = () => {
     return (
-        <div className="min-h-screen w-full bg-gradient-to-b from-secondary/20 to-background flex items-center justify-center px-4">
-            <Card className="w-full max-w-md border-border/60 shadow-lg motion-safe:animate-in motion-safe:fade-in-0 motion-safe:slide-in-from-bottom-2 motion-safe:duration-500 motion-safe:ease-out">
+        <div className="relative min-h-screen w-full bg-dotted-gradient flex items-center justify-center px-4">
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/4 to-transparent pointer-events-none" />
+            <Card className="relative bg-neutral-50/95 border border-neutral-200 shadow-xl backdrop-blur-md w-full max-w-md rounded-2xl motion-safe:animate-in motion-safe:fade-in-0 motion-safe:slide-in-from-bottom-2 motion-safe:duration-500 motion-safe:ease-out">
                 <CardHeader className="text-center space-y-2">
                     <img
                         src="/Logo3.png"
@@ -24,7 +25,7 @@ const AuthPage = () => {
                         Sign in to Mehfil
                     </CardTitle>
                     <CardDescription className="text-base ">
-                          A calm space to connect and share.
+                        A calm space to connect and share.
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -41,6 +42,7 @@ const AuthPage = () => {
                     By continuing, you agree to our terms.
                 </CardFooter>
             </Card>
+
         </div>
     );
 };

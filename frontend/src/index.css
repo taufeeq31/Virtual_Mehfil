@@ -118,3 +118,12 @@
     @apply bg-background text-foreground;
   }
 }
+
+.bg-dotted-gradient {
+  background-color: #000;
+  background-image:
+    radial-gradient(rgba(200, 200, 200, 0.15) 1px, transparent 1px),
+    linear-gradient(to bottom, #000000 0%, #111111 50%, #000000 100%);
+  background-size: 24px 24px, 100% 100%;
+}
+
