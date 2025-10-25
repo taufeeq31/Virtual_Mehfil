@@ -6,6 +6,7 @@ import { clerkMiddleware } from '@clerk/express';
 import { functions, inngest } from './config/inngest.js';
 import { serve } from 'inngest/express';
 import chatRoutes from './routes/chat.routes.js';
+import cors from 'cors';
 
 import * as Sentry from '@sentry/node';
 
@@ -13,7 +14,7 @@ const app = express();
 
 app.use(clerkMiddleware()); //verify karega token ko and will attach req.auth
 app.use(express.json()); //help in parsing json bodies
-
+app.use(cors({ origin: 'http://localhost:5173', credentials: true })); //enable CORS for all origins
 
 app.get('/', (req, res) => {
     res.send('Hello World!');
