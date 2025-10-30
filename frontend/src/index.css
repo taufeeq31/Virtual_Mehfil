@@ -120,10 +120,9 @@
 }
 
 .bg-dotted-gradient {
-  background-color: #000;
   background-image:
-    radial-gradient(rgba(200, 200, 200, 0.15) 1px, transparent 1px),
-    linear-gradient(to bottom, #000000 0%, #111111 50%, #000000 100%);
+    radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.1) 1px, transparent 0),
+    linear-gradient(to bottom right, #0a0a0a, #111);
   background-size: 24px 24px, 100% 100%;
 }
 

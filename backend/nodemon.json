@@ -1,0 +1,7 @@
+{
+    "watch": ["src"],
+    "ignore": ["node_modules", "logs", "dist", "build", "public"],
+    "ext": "js,json",
+    "exec": "node src/server.js",
+    "legacyWatch": true
+}
