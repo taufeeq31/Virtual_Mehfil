@@ -24,6 +24,18 @@ export default defineConfig([
     },
     rules: {
       'no-unused-vars': ['error', { varsIgnorePattern: '^[A-Z_]' }],
+      // Prevent accidental imports from backend or outside src
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            '../backend/*',
+            '../../backend/*',
+            '../../../backend/*',
+            '**/backend/**',
+          ],
+        },
+      ],
     },
   },
 ])

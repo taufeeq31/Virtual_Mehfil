@@ -1,15 +1,15 @@
-import { useState, useEffect, Component } from 'react';
+import { useState, useEffect } from 'react';
 import { StreamChat } from 'stream-chat';
 import { useUser } from '@clerk/clerk-react';
 import { useQuery } from '@tanstack/react-query';
-import { getStreamToken } from '../../../frontend/src/lib/api.js';
+import { getStreamToken } from '../lib/api';
 import * as Sentry from '@sentry/react';
 
 const STREAM_API_KEY = import.meta.env.VITE_STREAM_API_KEY;
 
-// A custom hook to initialize and manage Stream Chat client
-// So when user is available, we fetch the token and connect the user to Stream Chat
-// We also handle cleanup by disconnecting the user when the component using this hook unmounts
+// this hook is used to connect the current user to the Stream Chat API
+// so that users can see each other's messages, send messages to each other, get realtime updates, etc.
+// it also handles  the disconnection when the user leaves the page
 
 export const useStreamChat = () => {
     const { user } = useUser();

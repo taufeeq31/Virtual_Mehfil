@@ -1,7 +1,7 @@
 import { UserButton } from '@clerk/clerk-react';
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router';
-import { useStreamChat } from '../../../backend/src/hooks/useStreamChat.js';
+import { useStreamChat } from '@/hooks/useStreamChat.js';
 import { Spinner } from '@/components/ui/spinner.jsx';
 import { Hash, Plus, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
