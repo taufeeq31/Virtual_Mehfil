@@ -3,9 +3,20 @@ import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router';
 import { useStreamChat } from '../../../backend/src/hooks/useStreamChat.js';
 import { Spinner } from '@/components/ui/spinner.jsx';
-import { Hash, Plus, Search, Users } from 'lucide-react';
+import { Hash, Plus, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import {
+    Sidebar,
+    SidebarContent,
+    SidebarHeader,
+    SidebarInset,
+    SidebarProvider,
+    SidebarSeparator,
+    SidebarTrigger,
+    SidebarGroup,
+    SidebarGroupLabel,
+    SidebarGroupContent,
+} from '@/components/ui/sidebar';
 
 import '../styles/stream-chat-theme.css';
 
@@ -21,6 +32,7 @@ import {
 import CreateChannelModal from '@/components/CreateChannelModal.jsx';
 import CustomChannelPreview from '@/components/CustomChannelPreview.jsx';
 import UsersList from '@/components/UsersList.jsx';
+import CustomChannelHeader from '@/components/CustomChannelHeader.jsx';
 
 const HomePage = () => {
     const [isCreateModalOpen, setisCreateModalOpen] = useState(false);
@@ -29,7 +41,6 @@ const HomePage = () => {
     const { chatClient, error, isLoading } = useStreamChat();
     const currentUserId = chatClient?.user?.id ?? chatClient?.userID;
 
-    //set active channel when chat client is ready
     useEffect(() => {
         if (chatClient) {
             const channelId = searchParams.get('channel');
@@ -56,113 +67,131 @@ const HomePage = () => {
     return (
         <div className="min-h-screen bg-slate-900 text-slate-50 font-sans">
             <Chat client={chatClient}>
-                <div className="mx-auto grid min-h-[100dvh] w-full max-w-[1400px] grid-cols-1 md:grid-cols-[300px_1fr] md:h-[100dvh] shadow-2xl">
-                    {/* Sidebar */}
-                    <aside className="sticky top-0 z-20 border-b border-blue-900/40 bg-slate-800 md:static md:border-b-0 md:border-r md:border-blue-900/40">
-                        {/* Header */}
-                        <div className="flex items-center bg-slate-900 justify-between gap-3 p-4">
-                            <div className="flex items-center gap-2">
-                                <img
-                                    src="/Logo3.png"
-                                    alt="Logo"
-                                    className="h-10 w-10 rounded  object-cover bg-white p-0.5"
-                                />
-                                <span className="text-xl font-semibold tracking-wide text-blue-400">
-                                    Mehfil
-                                </span>
-                            </div>
-                            <UserButton />
-                        </div>
-                        <div className="border-t border-blue-900/40" />
-                        {/* Actions */}
-                        <div className="space-y-4 p-4">
-                            <Button
-                                type="button"
-                                variant="outline"
-                                onClick={() => setisCreateModalOpen(true)}
-                                className="w-full rounded-lg border-blue-500 bg-blue-600 text-white hover:bg-blue-500 transition duration-150 p-2.5 shadow-md shadow-blue-500/20"
-                            >
-                                <Plus className="size-4 mr-2" />
-                                Create New Channel
-                            </Button>
-                        </div>
-                        {/* ChannelList */}
-                        <div className="px-3 pb-4 md:pb-4 max-h-[40vh] overflow-y-auto md:max-h-[calc(100vh-200px)]">
-                            <ChannelList
-                                filters={{ members: { $in: [currentUserId] } }}
-                                options={{ state: true, watch: true }}
-                                Preview={({ channel }) => (
-                                    <CustomChannelPreview
-                                        channel={channel}
-                                        activeChannel={activeChannel}
-                                        setActiveChannel={(channel) =>
-                                            setSearchParams({ channel: channel.id })
-                                        }
+                <SidebarProvider
+                    style={{
+                        '--sidebar': '#1f2937',
+                        '--sidebar-foreground': '#e2e8f0',
+                        '--sidebar-border': 'rgba(30, 58, 138, 0.4)',
+                        '--sidebar-accent': 'rgba(30, 58, 138, 0.15)',
+                        '--sidebar-accent-foreground': '#cbd5e1',
+                        '--sidebar-ring': '#2563eb',
+                    }}
+                >
+                    <Sidebar
+                        collapsible="offcanvas"
+                        className="border-r border-blue-900/40 bg-slate-800"
+                    >
+                        <SidebarHeader className="bg-slate-900">
+                            <div className="flex items-center justify-between gap-3 p-2">
+                                <div className="flex items-center gap-2">
+                                    <img
+                                        src="/Logo3.png"
+                                        alt="Logo"
+                                        className="h-10 w-10 rounded object-cover bg-white p-0.5"
                                     />
-                                )}
-                                List={({ children, loading, error }) => (
-                                    <div className="space-y-3">
-                                        {/* Channels header */}
-                                        <div className="flex items-center justify-between px-1 pt-2">
-                                            <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-blue-400 font-semibold">
-                                                <Hash className="size-4 text-blue-500" />
-                                                <span>Channels</span>
-                                            </div>
-                                        </div>
-                                        <div className="h-px bg-blue-900/50" />
+                                    <span className="text-xl font-semibold tracking-wide text-blue-400">
+                                        Mehfil
+                                    </span>
+                                </div>
+                                <UserButton />
+                            </div>
+                        </SidebarHeader>
+                        <SidebarSeparator />
+                        <SidebarContent>
+                            {/* Create channel action */}
+                            <div className="space-y-4 p-4">
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    onClick={() => setisCreateModalOpen(true)}
+                                    className="w-full rounded-lg border-blue-500 bg-blue-600 text-white hover:bg-blue-500 transition duration-150 p-2.5 shadow-md shadow-blue-500/20"
+                                >
+                                    <Plus className="size-4 mr-2" />
+                                    Create New Channel
+                                </Button>
+                            </div>
 
-                                        {loading && (
-                                            <div className="px-3 py-2 text-sm text-slate-400">
-                                                Loading channels…
-                                            </div>
-                                        )}
-                                        {error && (
-                                            <div className="px-3 py-2 text-sm text-red-400">
-                                                Error loading channels
-                                            </div>
-                                        )}
+                            {/* Channels group */}
+                            <SidebarGroup>
+                                <SidebarGroupLabel>
+                                    <div className="flex items-center gap-2 text-blue-400">
+                                        <Hash className="size-4 text-blue-500" />
+                                        <span>Channels</span>
+                                    </div>
+                                </SidebarGroupLabel>
+                                <SidebarGroupContent>
+                                    <div className="px-3 md:pb-3">
+                                        <ChannelList
+                                            filters={{ members: { $in: [currentUserId] } }}
+                                            options={{ state: true, watch: true }}
+                                            Preview={({ channel }) => (
+                                                <CustomChannelPreview
+                                                    channel={channel}
+                                                    activeChannel={activeChannel}
+                                                    setActiveChannel={(channel) =>
+                                                        setSearchParams({ channel: channel.id })
+                                                    }
+                                                />
+                                            )}
+                                            List={({ children, loading, error }) => (
+                                                <div className="space-y-3">
+                                                    {loading && (
+                                                        <div className="px-3 py-2 text-sm text-slate-400">
+                                                            Loading channels…
+                                                        </div>
+                                                    )}
+                                                    {error && (
+                                                        <div className="px-3 py-2 text-sm text-red-400">
+                                                            Error loading channels
+                                                        </div>
+                                                    )}
+                                                    <div className="space-y-1.5 px-0.5">
+                                                        {children}
+                                                    </div>
+                                                </div>
+                                            )}
+                                        />
+                                    </div>
+                                </SidebarGroupContent>
+                            </SidebarGroup>
 
-                                        <div className="space-y-1.5 px-0.5">{children}</div>
+                            <SidebarSeparator />
 
-                                        {/* Direct Messages header */}
-                                        <div className="mt-4 flex items-center justify-between px-1">
-                                            <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-blue-400 font-semibold">
-                                                <Users className="size-4 text-blue-500" />
-                                                <span>Direct Messages</span>
-                                            </div>
-                                        </div>
-                                        <div className="h-px mb-0 bg-blue-900/50" />
-
+                            {/* Direct Messages group */}
+                            <SidebarGroup>
+                                <SidebarGroupLabel>
+                                    <div className="flex items-center gap-2 text-blue-400">
+                                        <Users className="size-4 text-blue-500" />
+                                        <span>Direct Messages</span>
+                                    </div>
+                                </SidebarGroupLabel>
+                                <SidebarGroupContent>
+                                    <div className="px-3 pb-2 md:pb-3">
                                         <UsersList activeChannel={activeChannel} />
                                     </div>
-                                )}
-                            />
-                        </div>
-                    </aside>
+                                </SidebarGroupContent>
+                            </SidebarGroup>
+                        </SidebarContent>
+                    </Sidebar>
 
-                    {/* Main Chat Area */}
-                    <main className="relative flex min-h-0 flex-col md:h-[100dvh] bg-slate-900">
-                        {/* Header bar over chat - more vibrant blue accent */}
-                        <div className="sticky top-0 z-10 flex items-center justify-between gap-2 border-b border-blue-900/50 bg-slate-800/70 px-4 py-3 backdrop-blur-md">
-                            <div className="min-w-0">
-                                <div className="truncate text-xs text-blue-300">Active Channel</div>
-                                <div className="truncate text-lg font-bold text-slate-50">
-                                    {activeChannel?.data?.name || activeChannel?.id || 'Welcome'}
-                                </div>
-                            </div>
+                    <SidebarInset>
+                        {/* Mobile sidebar trigger */}
+                        <div className="p-2 md:hidden">
+                            <SidebarTrigger className="md:hidden bg-blue-300  " />
                         </div>
-
                         <div className="min-h-0 flex-1">
                             <Channel channel={activeChannel}>
                                 <Window>
+                                    <CustomChannelHeader />
                                     <MessageList />
                                     <MessageInput />
                                 </Window>
                                 <Thread />
                             </Channel>
                         </div>
-                    </main>
-                </div>
+                    </SidebarInset>
+                </SidebarProvider>
+
                 {isCreateModalOpen && (
                     <CreateChannelModal onClose={() => setisCreateModalOpen(false)} />
                 )}
