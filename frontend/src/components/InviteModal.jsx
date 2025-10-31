@@ -169,4 +169,3 @@ const InviteModal = ({ channel, onClose }) => {
 };
 
 export default InviteModal;
-b
