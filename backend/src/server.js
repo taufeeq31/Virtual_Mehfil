@@ -14,7 +14,7 @@ const app = express();
 
 app.use(clerkMiddleware()); //verify karega token ko and will attach req.auth
 app.use(express.json()); //help in parsing json bodies
-app.use(cors({ origin: 'http://localhost:5173', credentials: true })); //enable CORS for all origins
+app.use(cors({ origin: ENV.CLIENT_URL , credentials: true })); //enable CORS for all origins
 
 app.get('/', (req, res) => {
     res.send('Hello World!');
