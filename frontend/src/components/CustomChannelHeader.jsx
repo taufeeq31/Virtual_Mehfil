@@ -1,15 +1,20 @@
 import { HashIcon, LockIcon, UsersIcon, PinIcon, VideoIcon } from 'lucide-react';
-import { useChannelStateContext } from 'stream-chat-react';
+import { useChannelStateContext, useChatContext } from 'stream-chat-react';
 import { useState } from 'react';
 import { useUser } from '@clerk/clerk-react';
 import { Button } from './ui/button';
 import MembersModal from './MembersModal';
 import PinnedMessagesModal from './PinnedMessagesModal';
 import InviteModal from './InviteModal';
+import { deleteChannel as deleteChannelApi } from '@/lib/api';
+import toast from 'react-hot-toast';
+import { useSearchParams } from 'react-router';
 
 const CustomChannelHeader = () => {
     const { channel } = useChannelStateContext();
+    const { client, setActiveChannel } = useChatContext();
     const { user } = useUser();
+    const [searchParams, setSearchParams] = useSearchParams();
 
     const memberCount = Object.keys(channel.state.members).length;
 
@@ -36,6 +41,46 @@ const CustomChannelHeader = () => {
             await channel.sendMessage({
                 text: `Join the video call: ${callUrl}`,
             });
+        }
+    };
+
+    const isOwner =
+        channel?.data?.created_by?.id === user?.id || channel?.data?.created_by_id === user?.id;
+
+    const handleDeleteChannel = async () => {
+        if (!channel) return;
+        const confirmed = window.confirm(
+            `Delete #${channel.id}? This will remove the channel and its messages for everyone.`
+        );
+        if (!confirmed) return;
+
+        try {
+            await deleteChannelApi(channel.id, false);
+            toast.success(`Channel #${channel.id} deleted`);
+            // Pick the next available channel for the current user (most recent)
+            try {
+                const filters = { type: 'messaging', members: { $in: [user.id] } };
+                const sort = { last_message_at: -1, updated_at: -1 };
+                const next = await client.queryChannels(filters, sort, { limit: 1 });
+
+                if (next && next[0]) {
+                    const nextChannel = next[0];
+                    // ensure it's watched before activating
+                    await nextChannel.watch();
+                    setActiveChannel(nextChannel);
+                    setSearchParams({ channel: nextChannel.id });
+                } else {
+                    setActiveChannel(null);
+                    if (searchParams.get('channel')) setSearchParams({});
+                }
+            } catch (e) {
+                // Fallback: clear active channel and URL param
+                setActiveChannel(null);
+                if (searchParams.get('channel')) setSearchParams({});
+            }
+        } catch (e) {
+            console.error('Delete channel failed', e);
+            toast.error(e?.response?.data?.message || 'Failed to delete channel');
         }
     };
 
@@ -89,6 +134,17 @@ const CustomChannelHeader = () => {
                 <Button className="hover:bg-[#F8F8F8] bg-transparent p-1 rounded" onClick={handleShowPinned}>
                     <PinIcon className="size-4 text-[#616061]" />
                 </Button>
+
+                {isOwner && (
+                    <Button
+                        variant="destructive"
+                        className="bg-red-500 hover:bg-red-600 text-white"
+                        onClick={handleDeleteChannel}
+                    >
+
+                        Delete
+                    </Button>
+                )}
             </div>
 
             {showMembers && (

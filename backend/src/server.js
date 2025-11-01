@@ -14,7 +14,24 @@ const app = express();
 
 app.use(clerkMiddleware()); //verify karega token ko and will attach req.auth
 app.use(express.json()); //help in parsing json bodies
-app.use(cors({ origin: ENV.CLIENT_URL , credentials: true })); //enable CORS for all origins
+
+// CORS: allow one or more origins via comma-separated CLIENT_URL
+const allowedOrigins = (ENV.CLIENT_URL || '')
+    .split(',')
+    .map((s) => s.trim())
+    .filter(Boolean);
+
+app.use(
+    cors({
+        origin: (origin, callback) => {
+            // allow non-browser requests (no Origin) like curl/postman
+            if (!origin) return callback(null, true);
+            if (allowedOrigins.includes(origin)) return callback(null, true);
+            return callback(new Error(`Not allowed by CORS: ${origin}`));
+        },
+        credentials: true,
+    })
+); // enable CORS for configured origins
 
 app.get('/', (req, res) => {
     res.send('Hello World!');

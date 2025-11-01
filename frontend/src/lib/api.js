@@ -9,3 +9,8 @@ export async function syncPublicChannels() {
     const response = await axiosInstance.post('/chat/sync-public-channels');
     return response.data;
 }
+
+export async function deleteChannel(channelId, hard = false) {
+    const response = await axiosInstance.post('/chat/delete-channel', { channelId, hard });
+    return response.data;
+}

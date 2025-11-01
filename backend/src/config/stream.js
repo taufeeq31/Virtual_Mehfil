@@ -41,3 +41,28 @@ export const addUserToPublicChannel = async (newUserId) => {
         await channel.addMembers([newUserId]);
     }
 };
+
+// Delete a channel if the requesting user is the creator/owner
+export const deleteChannelIfOwner = async (userId, channelId, { hard = false } = {}) => {
+    const [channel] = await streamClient.queryChannels(
+        { id: { $eq: channelId }, type: 'messaging' },
+        {},
+        { limit: 1 }
+    );
+
+    if (!channel) {
+        const err = new Error('Channel not found');
+        err.status = 404;
+        throw err;
+    }
+
+    const createdById = channel.data?.created_by?.id || channel.data?.created_by_id;
+    if (!createdById || createdById !== userId) {
+        const err = new Error('Forbidden');
+        err.status = 403;
+        throw err;
+    }
+
+    await channel.delete({ hard });
+    return { deleted: true };
+};
