@@ -3,6 +3,7 @@ import { StreamChat } from 'stream-chat';
 import { useUser } from '@clerk/clerk-react';
 import { useQuery } from '@tanstack/react-query';
 import { getStreamToken } from '../lib/api';
+import { syncPublicChannels } from '../lib/api'; // Added syncPublicChannels import
 import * as Sentry from '@sentry/react';
 
 const STREAM_API_KEY = import.meta.env.VITE_STREAM_API_KEY;
@@ -50,6 +51,12 @@ export const useStreamChat = () => {
                 );
                 if (!cancelled) {
                     setChatClient(client);
+                    // Best-effort: ensure the user is in all public channels
+                    try {
+                        await syncPublicChannels();
+                    } catch (e) {
+                        // non-fatal; ignore
+                    }
                 }
             } catch (error) {
                 console.log('Error connecting to stream', error);
