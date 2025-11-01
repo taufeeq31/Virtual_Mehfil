@@ -13,13 +13,20 @@ const UsersList = ({ activeChannel }) => {
     const fetchUsers = useCallback(async () => {
         if (!client?.user) return;
 
+
+
         const response = await client.queryUsers(
             { id: { $ne: client.user.id } },
             { name: 1 },
             { limit: 20 }
         );
 
-        const usersOnly = response.users.filter((user) => !user.id.startsWith('recording-'));
+
+        //Temp fix to filter out recording and deleted users
+        const usersOnly = response.users.filter(
+            (user) => !user.id.startsWith('recording-') && !user.id.startsWith('deleted-')
+        );
+
 
         return usersOnly;
     }, [client]);
